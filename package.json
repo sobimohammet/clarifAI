@@ -1,0 +1,9 @@
+{
+  "name": "clarifai",
+  "version": "1.0.0",
+  "description": "AI assistant web app powered by the Claude API",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  }
+}
