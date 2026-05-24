@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClarifAI — AI Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Orbitron:wght@400;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+
+    <!-- ── Background layers ─────────────────────────────────── -->
+    <div class="noise"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- ── App shell ─────────────────────────────────────────── -->
+    <div class="app" id="app">
+
+      <!-- ── Header ──────────────────────────────────────────── -->
+      <header class="header">
+        <div class="header-left">
+          <a href="#" class="logo">
+            <span class="logo-bracket">&lt;</span>CLARIF<span class="logo-accent">AI</span><span class="logo-bracket">/&gt;</span>
+          </a>
+          <div class="header-divider"></div>
+          <div class="model-badge" id="modelBadge">
+            <span class="model-dot" id="modelDot"></span>
+            <span id="modelLabel">claude-sonnet-4-5</span>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Token counter -->
+          <div class="token-counter" id="tokenCounter" title="Approximate tokens used this session">
+            <span class="token-icon">⬡</span>
+            <span id="tokenCount">0</span>
+            <span class="token-label">tokens</span>
+          </div>
+
+          <!-- System prompt toggle -->
+          <button class="icon-btn" id="sysPromptToggle" title="Edit system prompt" aria-expanded="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+            </svg>
+          </button>
+
+          <!-- Clear chat -->
+          <button class="icon-btn" id="clearBtn" title="Clear conversation">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+            </svg>
+          </button>
+
+          <!-- Back to portfolio -->
+          <a href="https://yourportfolio.vercel.app" class="icon-btn portfolio-link" title="Back to portfolio" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </a>
+        </div>
+      </header>
+
+      <!-- ── System Prompt Panel ──────────────────────────────── -->
+      <div class="sys-prompt-panel" id="sysPromptPanel" aria-hidden="true">
+        <div class="sys-prompt-inner">
+          <div class="sys-prompt-header">
+            <span class="sys-prompt-label">
+              <span class="label-bracket">//</span> SYSTEM PROMPT
+            </span>
+            <span class="sys-prompt-hint">Defines how the assistant behaves</span>
+          </div>
+          <textarea
+            id="sysPromptInput"
+            class="sys-prompt-textarea"
+            rows="4"
+            spellcheck="false"
+            placeholder="You are a helpful assistant..."
+          >You are ClarifAI, a sharp and direct AI assistant. You give clear, accurate answers without unnecessary padding. When writing code, always use code blocks. Be concise but never at the expense of completeness.</textarea>
+          <div class="sys-prompt-footer">
+            <button class="sys-prompt-apply" id="sysPromptApply">APPLY &amp; CLOSE</button>
+            <span class="sys-prompt-note">Changes apply to new messages only</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Chat area ────────────────────────────────────────── -->
+      <main class="chat-main" id="chatMain">
+
+        <!-- Welcome screen (shown when no messages) -->
+        <div class="welcome" id="welcomeScreen">
+          <div class="welcome-icon">◈</div>
+          <h1 class="welcome-title">ClarifAI</h1>
+          <p class="welcome-sub">An AI assistant powered by Claude. Ask anything.</p>
+          <div class="welcome-suggestions">
+            <button class="suggestion-chip" data-prompt="Explain how the Claude API works in simple terms.">
+              How does the Claude API work?
+            </button>
+            <button class="suggestion-chip" data-prompt="Write a JavaScript function that debounces another function, with comments.">
+              Write a debounce function in JS
+            </button>
+            <button class="suggestion-chip" data-prompt="What are the key differences between REST and GraphQL APIs?">
+              REST vs GraphQL — key differences
+            </button>
+            <button class="suggestion-chip" data-prompt="Give me 5 practical tips for writing better prompts for LLMs.">
+              Tips for better prompt engineering
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages container -->
+        <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Chat messages">
+          <!-- Messages injected here by app.js -->
+        </div>
+
+      </main>
+
+      <!-- ── Input bar ─────────────────────────────────────────── -->
+      <footer class="input-bar">
+        <div class="input-wrap">
+          <textarea
+            id="userInput"
+            class="input-textarea"
+            placeholder="Send a message..."
+            rows="1"
+            spellcheck="true"
+            aria-label="Message input"
+          ></textarea>
+          <button class="send-btn" id="sendBtn" aria-label="Send message" disabled>
+            <svg class="send-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            <span class="stop-icon" aria-hidden="true">■</span>
+          </button>
+        </div>
+        <div class="input-meta">
+          <span class="input-hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</span>
+          <span class="input-model">Powered by <a href="https://anthropic.com" target="_blank" rel="noopener">Anthropic Claude</a></span>
+        </div>
+      </footer>
+
+    </div><!-- /app -->
+
+    <script src="./app.js"></script>
+  </body>
+</html>
